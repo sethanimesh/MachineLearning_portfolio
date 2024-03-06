@@ -1,5 +1,4 @@
 # Animesh Seth's Portfolio
-My professional Machine Learning Portfolio
 
 Hi and Welcome to my portfolio
 
