@@ -3,7 +3,7 @@
 Hi and Welcome to my portfolio
 
 
-Here's an example of some code I wrote {Salary_dataset/Salary_dataset.md}.
+Here's an example of some code I wrote - [Salary Dataset Notebook]{Salary_dataset/Salary_dataset.md}.
 
 
 Questions? Email me at:
