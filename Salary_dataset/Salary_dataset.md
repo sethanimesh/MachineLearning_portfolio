@@ -197,6 +197,158 @@ print(f'R-squared: {r_squared:.4f}')
     R-squared: -10.7472
 
 
+## Using Sckit-Learn Library
+
+
+```python
+from sklearn.linear_model import SGDRegressor
+from sklearn.preprocessing import StandardScaler
+```
+
+### Normalising the data
+
+
+```python
+scaler = StandardScaler()
+X_norm = scaler.fit_transform(X_train)
+print(f"Peak to Peak range by column in Raw.            X:{np.ptp(X_train, axis=0)}")
+print(f"Peak to Peak range by column in Normalised.     X:{np.ptp(X_norm, axis=0)}")
+```
+
+    Peak to Peak range by column in Raw.            X:[9.4]
+    Peak to Peak range by column in Normalised.     X:[3.26257267]
+
+
+The "Peak to Peak" range in the raw dataset (X_train) is approximately 9.4.
+After normalization (X_norm), the "Peak to Peak" range reduces significantly to approximately 3.26.
+
+This reduction in the range indicates that normalization has effectively scaled the data to a smaller range, bringing the features closer together in scale.
+
+### Create and fit the regression model
+
+
+```python
+sgdr = SGDRegressor(max_iter=1000)
+sgdr.fit(X_norm, y_train)
+print(sgdr)
+b_norm = sgdr.intercept_
+w_norm = sgdr.coef_
+print(f"Model parameters:  w:{w_norm} and b:{b_norm}")
+```
+
+    SGDRegressor()
+    Model parameters:  w:[27141.09311888] and b:[74193.24926319]
+
+
+### Make predictions
+
+
+```python
+y_pred_sgd = sgdr.predict(X_norm)
+y_pred = np.dot( X_norm, w_norm) + b_norm
+
+print(f"Prediction using np.dot() and sgdr.predict match: {(y_pred_sgd==y_pred).all()}")
+print(f"Prediction on training set: {y_pred[:4]}")
+print(f"Target values: {y_train[:4]}")
+```
+
+    Prediction using np.dot() and sgdr.predict match: True
+    Prediction on training set: [122353.97212084 107281.66765683  63006.77329381  35688.22145279]
+    Target values: [122392. 109432.  56958.  39344.]
+
+
+## Accuracy
+
+
+```python
+mse = np.mean((y_pred_sgd - y_train) ** 2)
+r_squared = 1 - (np.sum((y_train - y_pred_sgd) ** 2) / np.sum((y_train - np.mean(y_train)) ** 2))
+
+print(f'Mean Squared Error: {mse:.4f}')
+print(f'R-squared: {r_squared:.4f}')
+```
+
+    Mean Squared Error: 27102595.2281
+    R-squared: 0.9645
+
+
+#### On the testing set
+
+
+```python
+X_norm_test = scaler.fit_transform(X_test)
+y_pred_sgd_test = sgdr.predict(X_norm_test)
+y_pred_test = np.dot( X_norm_test, w_norm) + b_norm
+
+print(f"Prediction using np.dot() and sgdr.predict match: {(y_pred_sgd_test==y_pred_test).all()}")
+print(f"Prediction on training set: {y_pred_test[:4]}")
+print(f"Target values: {y_test[:4]}")
+```
+
+    Prediction using np.dot() and sgdr.predict match: True
+    Prediction on training set: [118362.0139239   63491.56619562 102017.62523888  68161.39153419]
+    Target values: [112636.  67939. 113813.  83089.]
+
+
+## Accuracy
+
+
+```python
+mse = np.mean((y_pred_sgd_test - y_test) ** 2)
+r_squared = 1 - (np.sum((y_test - y_pred_sgd_test) ** 2) / np.sum((y_test - np.mean(y_test)) ** 2))
+
+print(f'Mean Squared Error: {mse:.4f}')
+print(f'R-squared: {r_squared:.4f}')
+```
+
+    Mean Squared Error: 151105450.7504
+    R-squared: 0.7042
+
+
+## Plot the results
+
+
+```python
+#plot predictions and targets
+plt.title("Target vs Predictions on Training dataset")
+plt.scatter(X_train, y_train, label='target')
+plt.scatter(X_train, y_pred, label='predicted', color='orange')
+```
+
+
+
+
+    <matplotlib.collections.PathCollection at 0x169093010>
+
+
+
+
+    
+![png](output_34_1.png)
+    
+
+
+
+```python
+#plot predictions and targets
+plt.title("Target vs Predictions on Testing dataset")
+plt.scatter(X_test, y_test, label='target')
+plt.scatter(X_test, y_pred_test, label='predicted', color='orange')
+```
+
+
+
+
+    <matplotlib.collections.PathCollection at 0x1690fd210>
+
+
+
+
+    
+![png](output_35_1.png)
+    
+
+
 
 ```python
 
